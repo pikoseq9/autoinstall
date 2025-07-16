@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -e
+
+sudo apt update
+sudo apt-get install -qy dnsmasq pxelinux syslinux-common wget
+
+sudo mkdir -p /srv/tftp/pxelinux.cfg
+sudo mkdir -p /srv/tftp/boot
+
+# Kopiowanie plików PXELINUX
+sudo cp /usr/lib/PXELINUX/pxelinux.0 /srv/tftp/
+sudo cp /usr/lib/syslinux/modules/bios/menu.c32 /srv/tftp/
+
+# Pobieranie Ubuntu 24.04 kernel/initrd
+wget -O /srv/tftp/boot/linux https://cdimage.ubuntu.com/ubuntu-server/daily/current/noble-live-server-amd64.kernel
+wget -O /srv/tftp/boot/initrd https://cdimage.ubuntu.com/ubuntu-server/daily/current/noble-live-server-amd64.initrd
+
+# Kopiowanie konfiguracji PXE
+sudo cp -r pxe/pxelinux.cfg /srv/tftp/
+
+# Konfiguracja dnsmasq
+sudo tee /etc/dnsmasq.d/pxe.conf > /dev/null <<EOF
+port=0
+interface=eth0
+bind-interfaces
+dhcp-range=192.168.1.100,192.168.1.150,12h
+dhcp-boot=pxelinux.0
+enable-tftp
+tftp-root=/srv/tftp
+EOF
+
+# restart dnsmasq
+sudo systemctl restart dnsmasq
