@@ -20,10 +20,10 @@ d-i partman/confirm boolean true
 d-i partman/confirm_nooverwrite boolean true
 
 d-i passwd/root-login boolean false
-d-i passwd/user-fullname string Blue Sparrow
-d-i passwd/username string BlueSparrow
-d-i passwd/user-password password P4553r1n3
-d-i passwd/user-password-again password P4553r1n3
+d-i passwd/user-fullname string Admin User
+d-i passwd/username string user
+d-i passwd/user-password password pass
+d-i passwd/user-password-again password pass
 
 d-i pkgsel/include string openssh-server curl
 d-i pkgsel/upgrade select none

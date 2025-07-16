@@ -18,10 +18,10 @@ wget -O /srv/tftp/boot/linux https://cdimage.ubuntu.com/ubuntu-server/daily/curr
 wget -O /srv/tftp/boot/initrd https://cdimage.ubuntu.com/ubuntu-server/daily/current/noble-live-server-amd64.initrd
 
 # Kopiowanie konfiguracji PXE
-sudo cp -r pxe/pxelinux.cfg /srv/tftp/
+sudo cp -r pxelinux.cfg /srv/tftp/
 
 # Kopiowanie preseed
-sudo cp boot/preseed.cfg /srv/tftp/boot/
+sudo cp boot/ubuntu.seed /srv/tftp/boot/
 
 # Konfiguracja dnsmasq (serwer DHCP + TFTP)
 sudo tee /etc/dnsmasq.d/pxe.conf > /dev/null <<EOF

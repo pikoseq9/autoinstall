@@ -9,7 +9,7 @@ Ten projekt pozwala zainstalować system Ubuntu 24.04 na innych komputerach w si
 
 ## Instalacja
 ```bash
-git https://github.com/pikoseq9/autoinstall.git pxe-server
+git https://github.com/pikoseq9/autoinstall.git autoinstaller
 cd pxe-server
 chmod +x install.sh
 sudo ./install.sh
