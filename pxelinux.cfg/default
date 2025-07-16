@@ -1,0 +1,5 @@
+DEFAULT install
+LABEL install
+    KERNEL boot/linux
+    INITRD boot/initrd
+    APPEND auto=true priority=critical file=/boot/ubuntu.seed ---
