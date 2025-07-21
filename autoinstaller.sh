@@ -13,10 +13,11 @@ Require all granted
 Alias /tftp /srv/tftp
 EOF'
 
-
+# Turn on the Apache config file and reload 
 sudo a2enconf tftp &> /dev/null
 sudo systemctl reload apache2 &> /dev/null
 
+# Create new dnsmasq.conf (test IP address, need to change)
 sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.old
 sudo bash -c 'cat <<EOF >> /etc/dnsmasq.conf
 interface=enp0s8
@@ -34,14 +35,15 @@ pxe-prompt="Press F8 for PXE Network boot.", 5
 pxe-service=x86PC, "Install OS via PXE", bootx64.efi
 EOF'
 
+# Enable and restart needed services
 sudo systemctl enable systemd-resolved --now
 sudo systemctl restart systemd-resolved
 sudo systemctl enable dnsmasq --now
 sudo systemctl enable apache2 --now
 sudo systemctl enable tftpd-hpa --now
-
 sudo systemctl restart dnsmasq
 
+# Download ubuntu iso file
 sudo wget https://releases.ubuntu.com/24.04/ubuntu-24.04.2-desktop-amd64.iso -O /srv/tftp/ubuntu-desktop-24-04.iso
 
 sudo mount /srv/tftp/ubuntu-desktop-24-04.iso /mnt/
@@ -49,6 +51,7 @@ sudo mkdir /srv/tftp/noble
 sudo cp /mnt/casper/{vmlinuz,initrd} /srv/tftp/noble
 sudo umount /mnt 
 
+# Get needed boot files
 cd /tmp/
 
 sudo apt-get download shim.signed -y
@@ -65,6 +68,7 @@ sudo cp /grub-common/usr/share/grub/unicode.pf2 /srv/tftp/unicode.pf2
 
 sudo mkdir -p /srv/tftp/grub
 
+# Add installer to grub.cfg
 sudo bash -c 'cat <<EOF >> /srv/tftp/grub/grub.cfg
 set default=autoinstall
 set timeout=30
@@ -77,6 +81,7 @@ menuentry "22.04 desktop Installer - automated" --id=autoinstall {
 }
 EOF'
 
+# Add pxelinux to also manage a BIOS boot
 sudo cp /usr/lib/PXELINUX/pxelinux.0 /srv/tftp/
 sudo mkdir -p /srv/tftp/pxelinux.cfg
 sudo touch /srv/tftp/pxelinux.cfg/default
@@ -89,6 +94,7 @@ LABEL install
 
 EOF'
 
+# Add meta-data file
 sudo mv /srv/tftp/ubuntu-desktop-24-04.iso /srv/tftp/noble/
 sudo touch /srv/tftp/noble/meta-data
 
@@ -96,6 +102,7 @@ sudo bash -c 'cat <<EOF >> /srv/tftp/noble/meta-data
 #cloud-config
 EOF'
 
+# Add user-data file
 sudo touch /srv/tftp/noble/user-data
 
 sudo bash -c 'cat <<EOF >> /srv/tftp/noble/user-data
@@ -136,5 +143,6 @@ autoinstall:
     echo "PXE instalacja zakończona"
 EOF'
 
+# Set permissions to tftp server files
 sudo chown -R nobody:nogroup /srv/tftp
 sudo chmod -R 755 /srv/tftp 
