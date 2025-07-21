@@ -1,8 +1,10 @@
 #!/bin/bash
 
-sudo apt update
-sudo apt-get install -y apache2 tftp-hpa isc-dhcp-server pxelinux syslinux-common curl
+# Install needed libs
+sudo apt update &> /dev/null
+sudo apt-get install -y apache2 tftp-hpa isc-dhcp-server pxelinux syslinux-common curl &> /dev/null
 
+# Configure tftp.conf 
 sudo bash -c 'cat <<EOF >> /etc/apache2/conf-available/tftp.conf
 <Directory /srv/tftp>
 Options +FollowSymLinks +Indexes
@@ -11,8 +13,9 @@ Require all granted
 Alias /tftp /srv/tftp
 EOF'
 
-sudo a2enconf tftp
-sudo systemctl reload apache2
+
+sudo a2enconf tftp &> /dev/null
+sudo systemctl reload apache2 &> /dev/null
 
 sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.old
 sudo bash -c 'cat <<EOF >> /etc/dnsmasq.conf
